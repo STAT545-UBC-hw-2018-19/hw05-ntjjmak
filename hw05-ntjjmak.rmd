@@ -1,0 +1,113 @@
+---
+title: "hw05-ntjjmak"
+author: "Nicole Mak"
+date: "15/10/2018"
+output: github_document
+---
+
+# Assignment #5
+
+
+**Load the packages to be used and load the singer data set.**
+
+```{r}
+
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(forcats))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(gapminder))
+```
+
+## Part 1: Factor management
+
+**Factors are how categorical data are stored. The values a factor can take on are called levels. It is important to check variable types. What you think are characters may actually be stored numerically. Let's explore the data frame.**
+
+```{r}
+summary(gapminder)
+```
+
+**Before beginning the factor management exercise, let's get to know the factors in the gapminder data set.**
+
+```{r}
+class(gapminder$country)
+class(gapminder$continent)
+class(gapminder$year)
+class(gapminder$lifeExp)
+class(gapminder$pop)
+class(gapminder$gdpPercap)
+
+```
+
+**We see that we have two factors in this data set. Let's see the levels for "country" and "continent" before we begin filtering the data.**
+
+```{r}
+nlevels(gapminder$country)
+nlevels(gapminder$continent)
+
+levels(gapminder$country)
+levels(gapminder$continent)
+```
+
+
+**Now let's work towards dropping "Oceoania".**
+
+**We will start by filtering the gapminder data to remove observations associated with the continent of Oceania.**
+
+```{r}
+No_Oceania <- gapminder %>%
+  filter(continent == "Africa" | continent =="Americas"|continent == "Asia"|continent == "Europe")
+No_Oceania %>% 
+  knitr:: kable(format = "markdown", justify = "centre")
+```
+
+**Let's check how many levels there are and whether we need to remove unused factor levels.**
+```{r}
+nlevels(No_Oceania$continent)
+levels(No_Oceania$continent)
+```
+
+**We see that there are still 5 levels. Let's remove the unused factor levels.**
+
+```{r}
+Drop_Oceania <- No_Oceania %>% 
+  droplevels()
+nlevels(Drop_Oceania$continent)
+levels(Drop_Oceania$continent)
+```
+
+**We do note that the factor levels are ordered alphabetically. Let's use forcats to re-order the factor levels. We can re-order in different ways.**
+
+**One way to re-order is by frequency.For example, the frequency of continents in the data.**
+
+```{r}
+Drop_Oceania$continent %>% 
+  fct_infreq() %>% 
+  levels()
+
+```
+
+**We can also re-order by the value of other variables in the data as life expectanc or gdp.**
+
+```{r}
+Drop_Oceania_1980 <- Drop_Oceania %>% 
+  filter(year > 1979) %>% 
+  group_by(continent, year) %>% 
+  mutate(mediangdp = median(gdpPercap))
+
+Drop_Oceania_1980
+
+
+fct_reorder(Drop_Oceania_1980$continent, Drop_Oceania_1980$gdpPercap, min) %>% 
+  levels() %>% head()
+```
+
+Now we can put this into graph form.
+
+```{r}
+ggplot(Drop_Oceania_1980, aes(x = year, y = Drop_Oceania_1980$mediangdp, color = fct_reorder2(continent, year, Drop_Oceania_1980$mediangdp))) +
+  geom_line() +
+  labs(color = "continent")
+```
+
