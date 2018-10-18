@@ -103,11 +103,65 @@ fct_reorder(Drop_Oceania_1980$continent, Drop_Oceania_1980$gdpPercap, min) %>%
   levels() %>% head()
 ```
 
-Now we can put this into graph form.
+**Now we can put this into graph form.**
 
 ```{r}
 ggplot(Drop_Oceania_1980, aes(x = year, y = Drop_Oceania_1980$mediangdp, color = fct_reorder2(continent, year, Drop_Oceania_1980$mediangdp))) +
   geom_line() +
-  labs(color = "continent")
+  labs(color = "Continent")+
+  xlab("Year") + ylab("Median GDP") +
+  ggtitle("Median GDP 1980-2007 by Continent")
+```
+
+**We see that reordering the levels allows the legend to be organized in the same fashion as the trendlines.**
+
+
+## Part 2 File input and output
+
+**Let's try saving some wrangled data into a new file.**
+
+```{r}
+trial<- gapminder %>% 
+  group_by(continent) %>% 
+  filter("year" == 1995)
+
+write.csv(trial, file = "assignment5_stat545")
+```
+
+```{r}
+trial2 <- fct_relevel(trial$continent, "Asia", "Europe", "Africa", "Oceania", "Americas")
+
+write.csv(trial2, file = "assignment5b_stat545")
+```
+
+
+## Part 2 Visualization design
+
+
+**Here is an old graph from assignment 3. It looks at the weighted mean life expectancy for continents over time for the gapminder data set.**
+
+```{r}
+gapminder %>% 
+ group_by(continent, year) %>%
+ summarise(mean_lifeExp_weighted = weighted.mean(lifeExp, pop)) %>% 
+ ggplot(aes(year, mean_lifeExp_weighted))+
+  geom_point(aes(colour = continent))
+```
+
+**What can be improved? 1) We can add a trend line so we can estimate what is happening between years. 2) We can change the axis titles and add a graph title. 3) We can re-order the factor levels so the legend is presented in logical order. 4) We can change the scale of the axes to show every 5 years of life.**
+
+```{r}
+gapminder %>% 
+ group_by(continent, year) %>%
+ summarise(mean_lifeExp_weighted = weighted.mean(lifeExp, pop)) %>% 
+ ggplot(aes(year, mean_lifeExp_weighted, color = fct_reorder2(continent, year, mean_lifeExp_weighted)))+
+  geom_point(aes(colour = continent))+
+  geom_line(aes(colour = continent))+
+  scale_y_continuous(breaks=5*(1:17))+
+  xlab("Year")+
+    ylab("Weighted Mean Life Expectancy")+
+  labs(color = "Continent")+
+  ggtitle("Weighted Mean Life Expectancy vs. Time (Years)")
+  
 ```
 
