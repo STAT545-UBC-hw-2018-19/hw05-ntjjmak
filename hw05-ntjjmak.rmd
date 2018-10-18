@@ -59,6 +59,7 @@ levels(gapminder$continent)
 No_Oceania <- gapminder %>%
   filter(continent == "Africa" | continent =="Americas"|continent == "Asia"|continent == "Europe")
 No_Oceania %>% 
+  sample_frac() %>% #just showing a sample of the data
   knitr:: kable(format = "markdown", justify = "centre")
 ```
 
@@ -121,12 +122,14 @@ ggplot(Drop_Oceania_1980, aes(x = year, y = Drop_Oceania_1980$mediangdp, color =
 **Let's try saving some wrangled data into a new file.**
 
 ```{r}
-trial<- gapminder %>% 
-  group_by(continent) %>% 
-  filter("year" == 1995)
+trial<- gapminder %>%
+  filter(year == "2007")
 
 write.csv(trial, file = "assignment5_stat545")
 ```
+
+
+**Ok. Now let's try reordering the levels and see if this order is preserved in the exported cxv file created.**
 
 ```{r}
 trial2 <- fct_relevel(trial$continent, "Asia", "Europe", "Africa", "Oceania", "Americas")
