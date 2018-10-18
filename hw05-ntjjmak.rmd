@@ -252,4 +252,11 @@ ggplotly(plotly1) %>%
   htmlwidgets::saveWidget("plotly1")
 ```
 
-**
+**Let's save this plot using `ggsave()`. This will generate an image file where we can specify certain aspects such as dimension and resolution.**
+
+```{r}
+plotly1
+
+ggsave("plotly1.png", width = 20, height = 20, units = "cm", dpi = 300)
+```
+
