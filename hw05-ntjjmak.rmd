@@ -4,7 +4,7 @@ author: "Nicole Mak"
 date: "15/10/2018"
 output:
     github_document:
-      html_notebook
+      html_document
 ---
 
 # Assignment #5
